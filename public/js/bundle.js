@@ -145,8 +145,19 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
+	var mixinElements = __webpack_require__(5);
 	
 	var Polygon = React.createClass({displayName: "Polygon",
+	    mixins: [mixinElements],
+	    getDefaultProps: function(){
+	        return {
+	            x: 0,
+	            y: 0,
+	            w: 10,
+	            h: 10,
+	            fillStyle: 'rgb(200,0,0)'
+	        }
+	    },
 	    shouldComponentUpdate: function(nextProps, nextState){
 	        return nextProps.context;
 	    },
@@ -154,14 +165,33 @@
 	        if(!this.props.context) return false;
 	        var ctx = this.props.context;
 	
-	        ctx.fillStyle = "rgb(200,0,0)";
-	        ctx.fillRect (this.props.x, this.props.y, 55, 50);
+	        this.fill();
+	
+	        ctx.fillRect (
+	            this.props.x,
+	            this.props.y,
+	            this.props.w,
+	            this.props.h);
 	
 	        return false;
 	    }
 	});
 	
 	module.exports = Polygon;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by nicolasmondon on 12/02/15.
+	 */
+	
+	module.exports = {
+	    fill: function(){
+	        this.props.context.fillStyle = this.props.fillStyle;
+	    }
+	};
 
 /***/ }
 /******/ ])
