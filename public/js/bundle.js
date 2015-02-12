@@ -67,12 +67,11 @@
 	            });
 	            this.incrementStep();
 	        }.bind(this))
-	
 	    },
 	    render: function () {
 	        return (
 	            React.createElement(Canvas, {identifier: "canvas", step: this.state.step}, 
-	                React.createElement(Polygon, {x: this.state.step%50, y: 10}), 
+	                React.createElement(Polygon, {x: this.state.step%50, y: 30, rotate: .3, h: 40}), 
 	                React.createElement(Polygon, {x: 10, y: this.state.step%50})
 	            )
 	        )
@@ -155,7 +154,8 @@
 	            y: 0,
 	            w: 10,
 	            h: 10,
-	            fillStyle: 'rgb(200,0,0)'
+	            fillStyle: 'rgb(200,0,0)',
+	            rotate: 0
 	        }
 	    },
 	    shouldComponentUpdate: function(nextProps, nextState){
@@ -165,13 +165,13 @@
 	        if(!this.props.context) return false;
 	        var ctx = this.props.context;
 	
-	        this.fill();
-	
+	        this.begin();
 	        ctx.fillRect (
-	            this.props.x,
-	            this.props.y,
-	            this.props.w,
-	            this.props.h);
+	            -this.props.w/2,
+	            -this.props.h/2,
+	            this.props.w/2,
+	            this.props.h/2);
+	        this.end();
 	
 	        return false;
 	    }
@@ -190,6 +190,22 @@
 	module.exports = {
 	    fill: function(){
 	        this.props.context.fillStyle = this.props.fillStyle;
+	    },
+	    stroke: function(){
+	
+	    },
+	    begin: function(){
+	        this.fill();
+	        this.stroke();
+	        this.props.context.save();
+	        this.props.context.translate(
+	            this.props.x,
+	            this.props.y
+	        );
+	        this.props.context.rotate(this.props.rotate);
+	    },
+	    end: function(){
+	        this.props.context.restore();
 	    }
 	};
 

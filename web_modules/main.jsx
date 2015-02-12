@@ -21,12 +21,11 @@ var Genetic = React.createClass({
             });
             this.incrementStep();
         }.bind(this))
-
     },
     render: function () {
         return (
             <Canvas identifier="canvas" step={this.state.step}>
-                <Polygon x={this.state.step%50} y={10}/>
+                <Polygon x={this.state.step%50} y={30} rotate={.3} h={40}/>
                 <Polygon x={10} y={this.state.step%50}/>
             </Canvas>
         )

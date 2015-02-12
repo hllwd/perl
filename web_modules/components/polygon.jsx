@@ -11,7 +11,8 @@ var Polygon = React.createClass({
             y: 0,
             w: 10,
             h: 10,
-            fillStyle: 'rgb(200,0,0)'
+            fillStyle: 'rgb(200,0,0)',
+            rotate: 0
         }
     },
     shouldComponentUpdate: function(nextProps, nextState){
@@ -21,13 +22,13 @@ var Polygon = React.createClass({
         if(!this.props.context) return false;
         var ctx = this.props.context;
 
-        this.fill();
-
+        this.begin();
         ctx.fillRect (
-            this.props.x,
-            this.props.y,
-            this.props.w,
-            this.props.h);
+            -this.props.w/2,
+            -this.props.h/2,
+            this.props.w/2,
+            this.props.h/2);
+        this.end();
 
         return false;
     }
