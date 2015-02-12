@@ -11,7 +11,7 @@ var Polygon = React.createClass({
         var ctx = this.props.context;
 
         ctx.fillStyle = "rgb(200,0,0)";
-        ctx.fillRect (10, 10, 55, 50);
+        ctx.fillRect (this.props.x, this.props.y, 55, 50);
 
         return false;
     }

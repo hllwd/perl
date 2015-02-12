@@ -52,10 +52,28 @@
 	var Polygon = __webpack_require__(4);
 	
 	var Genetic = React.createClass({displayName: "Genetic",
+	    getInitialState: function(){
+	        return {
+	            step: 0
+	        };
+	    },
+	    componentDidMount: function(){
+	        this.incrementStep();
+	    },
+	    incrementStep: function(){
+	        window.requestAnimationFrame(function(){
+	            this.setState({
+	                step: this.state.step+1
+	            });
+	            this.incrementStep();
+	        }.bind(this))
+	
+	    },
 	    render: function () {
 	        return (
-	            React.createElement(Canvas, {identifier: "canvas"}, 
-	                React.createElement(Polygon, null)
+	            React.createElement(Canvas, {identifier: "canvas", step: this.state.step}, 
+	                React.createElement(Polygon, {x: this.state.step%50, y: 10}), 
+	                React.createElement(Polygon, {x: 10, y: this.state.step%50})
 	            )
 	        )
 	    }
@@ -90,26 +108,26 @@
 	var $ = __webpack_require__(2);
 	
 	var Canvas = React.createClass({displayName: "Canvas",
-	    getInitialState: function () {
-	        return {
-	            canvas: false,
-	            context: false
-	        };
-	    },
+	    _canvas: false,
+	    _context: false,
 	    componentDidMount: function () {
 	        var canvas = $('#' + this.props.identifier).get(0);
-	        this.setState({
-	            canvas: canvas,
-	            context: canvas.getContext('2d')
-	        });
+	        this._canvas = canvas;
+	        this._context = canvas.getContext('2d');
 	    },
-	    render: function () {
-	        var children = React.Children.map(this.props.children, function (child) {
+	    componentWillUpdate: function(){
+	        this._context && this._context.clearRect(0,0, this._canvas.width, this._canvas.height);
+	    },
+	    renderChildren: function(){
+	        return React.Children.map(this.props.children, function (child) {
 	            return React.addons.cloneWithProps(child, {
-	                context: this.state.context
+	                context: this._context
 	            });
 	            return child;
 	        }.bind(this));
+	    },
+	    render: function () {
+	        var children = this.renderChildren();
 	        return (
 	            React.createElement("canvas", {id: this.props.identifier}, 
 	                children
@@ -137,8 +155,8 @@
 	        var ctx = this.props.context;
 	
 	        ctx.fillStyle = "rgb(200,0,0)";
-	        ctx.fillRect (10, 10, 55, 50);
-	        
+	        ctx.fillRect (this.props.x, this.props.y, 55, 50);
+	
 	        return false;
 	    }
 	});

@@ -4,26 +4,26 @@ var React = require('react');
 var $ = require('jquery');
 
 var Canvas = React.createClass({
-    getInitialState: function () {
-        return {
-            canvas: false,
-            context: false
-        };
-    },
+    _canvas: false,
+    _context: false,
     componentDidMount: function () {
         var canvas = $('#' + this.props.identifier).get(0);
-        this.setState({
-            canvas: canvas,
-            context: canvas.getContext('2d')
-        });
+        this._canvas = canvas;
+        this._context = canvas.getContext('2d');
     },
-    render: function () {
-        var children = React.Children.map(this.props.children, function (child) {
+    componentWillUpdate: function(){
+        this._context && this._context.clearRect(0,0, this._canvas.width, this._canvas.height);
+    },
+    renderChildren: function(){
+        return React.Children.map(this.props.children, function (child) {
             return React.addons.cloneWithProps(child, {
-                context: this.state.context
+                context: this._context
             });
             return child;
         }.bind(this));
+    },
+    render: function () {
+        var children = this.renderChildren();
         return (
             <canvas id={this.props.identifier}>
                 {children}
