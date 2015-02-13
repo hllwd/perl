@@ -1,11 +1,10 @@
 'use strict';
 
 var React = require('react');
-var mixinPrimitive = require('components/mixin-primitive');
 var mixinComponent = require('components/mixin-component');
 
 var Rect = React.createClass({
-    mixins: [mixinPrimitive, mixinComponent],
+    mixins: [ mixinComponent],
     getDefaultProps: function(){
         return {
             x: 0,
@@ -21,13 +20,23 @@ var Rect = React.createClass({
         if(!this.props.context) return false;
         var ctx = this.props.context;
 
-        this.begin();
+        ctx.fillStyle = this.props.fillStyle;
+
+        ctx.save();
+
+        ctx.translate(
+            this.props.x,
+            this.props.y
+        );
+        ctx.rotate(this.props.rotate);
+
         ctx.fillRect (
             -this.props.w/2,
             -this.props.h/2,
             this.props.w/2,
             this.props.h/2);
-        this.end();
+        
+        ctx.restore();
 
         return false;
     }

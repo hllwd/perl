@@ -186,11 +186,10 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var mixinPrimitive = __webpack_require__(7);
 	var mixinComponent = __webpack_require__(8);
 	
 	var Rect = React.createClass({displayName: "Rect",
-	    mixins: [mixinPrimitive, mixinComponent],
+	    mixins: [ mixinComponent],
 	    getDefaultProps: function(){
 	        return {
 	            x: 0,
@@ -206,13 +205,23 @@
 	        if(!this.props.context) return false;
 	        var ctx = this.props.context;
 	
-	        this.begin();
+	        ctx.fillStyle = this.props.fillStyle;
+	
+	        ctx.save();
+	
+	        ctx.translate(
+	            this.props.x,
+	            this.props.y
+	        );
+	        ctx.rotate(this.props.rotate);
+	
 	        ctx.fillRect (
 	            -this.props.w/2,
 	            -this.props.h/2,
 	            this.props.w/2,
 	            this.props.h/2);
-	        this.end();
+	        
+	        ctx.restore();
 	
 	        return false;
 	    }
@@ -221,30 +230,7 @@
 	module.exports = Rect;
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Created by nicolasmondon on 12/02/15.
-	 */
-	
-	module.exports = {
-	
-	    begin: function(){
-	        this.props.context.fillStyle = this.props.fillStyle;
-	        this.props.context.save();
-	        this.props.context.translate(
-	            this.props.x,
-	            this.props.y
-	        );
-	        this.props.context.rotate(this.props.rotate);
-	    },
-	    end: function(){
-	        this.props.context.restore();
-	    }
-	};
-
-/***/ },
+/* 7 */,
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
