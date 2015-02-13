@@ -23,7 +23,8 @@ module.exports = {
         root: [
             path.resolve('node_modules'),
             path.resolve('web_modules'),
-            path.resolve('sass')
+            path.resolve('sass'),
+            path.resolve('data')
         ],
         extensions: ['', '.js', '.jsx']
     },
@@ -36,7 +37,9 @@ module.exports = {
             { test: /\.eot$/,    loader: "file-loader" },
             { test: /\.svg$/,    loader: "file-loader" },
             // jsx loader
-            { test: /\.jsx$/, loader: 'jsx-loader'}
+            { test: /\.jsx$/, loader: 'jsx-loader'},
+            // png loader
+            { test: /\.png$/, loader: 'url-loader'}
         ]
     },
     devtool: 'source-map'
