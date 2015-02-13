@@ -13,6 +13,8 @@ var imageSrc = require('perl.png');
 var image = new Image();
 image.src = imageSrc;
 
+var dim = [334, 413];
+
 var Genetic = React.createClass({
     getInitialState: function(){
         return {
@@ -32,7 +34,7 @@ var Genetic = React.createClass({
     },
     render: function () {
         return (
-            <Canvas identifier="canvas-gen" step={this.state.step} width={648} height={801}>
+            <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]}>
                 <Polygon points={[[10,10], [40, 40], [30, 80]]} fillStyle={'#00F'}/>
                 <Rect x={this.state.step%50} y={30} rotate={.3} h={40} fillStyle={'#0F0'}/>
                 <Rect x={10} y={this.state.step%50}/>
@@ -50,7 +52,7 @@ var Original = React.createClass({
     },
     render: function () {
         return (
-            <Canvas identifier="canvas-img" step={this.state.step} width={648} height={801}>
+            <Canvas identifier="canvas-img" step={this.state.step} width={dim[0]} height={dim[1]}>
                 <ImageComp image={image}/>
             </Canvas>
         )
