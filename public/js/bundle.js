@@ -49,6 +49,7 @@
 	var React = __webpack_require__(1);
 	var $ = __webpack_require__(2);
 	var Canvas = __webpack_require__(3);
+	var Rect = __webpack_require__(6);
 	var Polygon = __webpack_require__(4);
 	
 	var Genetic = React.createClass({displayName: "Genetic",
@@ -71,8 +72,9 @@
 	    render: function () {
 	        return (
 	            React.createElement(Canvas, {identifier: "canvas", step: this.state.step}, 
-	                React.createElement(Polygon, {x: this.state.step%50, y: 30, rotate: .3, h: 40}), 
-	                React.createElement(Polygon, {x: 10, y: this.state.step%50})
+	                React.createElement(Polygon, {points: [[10,10], [40, 40], [30, 80]], fillStyle: '#00F'}), 
+	                React.createElement(Rect, {x: this.state.step%50, y: 30, rotate: .3, h: 40, fillStyle: '#0F0'}), 
+	                React.createElement(Rect, {x: 10, y: this.state.step%50})
 	            )
 	        )
 	    }
@@ -144,10 +146,51 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var mixinElements = __webpack_require__(5);
+	var mixinComponent = __webpack_require__(8);
 	
 	var Polygon = React.createClass({displayName: "Polygon",
-	    mixins: [mixinElements],
+	    mixins: [mixinComponent],
+	    getDefaultProps: function(){
+	        return {
+	            points: [],
+	            fillStyle: 'rgb(200,0,0)'
+	        }
+	    },
+	    render: function(){
+	        if(!this.props.context) return false;
+	        var ctx = this.props.context;
+	
+	        ctx.fillStyle = this.props.fillStyle;
+	        ctx.beginPath();
+	        this.props.points.forEach(function(p, i){
+	            if(i === 0){
+	                ctx.moveTo(p[0], p[1]);
+	            }else {
+	                ctx.lineTo(p[0], p[1]);
+	            }
+	        }, this);
+	        ctx.closePath();
+	        ctx.fill();
+	
+	        return false;
+	    }
+	});
+	
+	module.exports = Polygon;
+
+/***/ },
+/* 5 */,
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var mixinPrimitive = __webpack_require__(7);
+	var mixinComponent = __webpack_require__(8);
+	
+	var Rect = React.createClass({displayName: "Rect",
+	    mixins: [mixinPrimitive, mixinComponent],
 	    getDefaultProps: function(){
 	        return {
 	            x: 0,
@@ -158,9 +201,7 @@
 	            rotate: 0
 	        }
 	    },
-	    shouldComponentUpdate: function(nextProps, nextState){
-	        return nextProps.context;
-	    },
+	
 	    render: function(){
 	        if(!this.props.context) return false;
 	        var ctx = this.props.context;
@@ -177,10 +218,10 @@
 	    }
 	});
 	
-	module.exports = Polygon;
+	module.exports = Rect;
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -188,15 +229,9 @@
 	 */
 	
 	module.exports = {
-	    fill: function(){
-	        this.props.context.fillStyle = this.props.fillStyle;
-	    },
-	    stroke: function(){
 	
-	    },
 	    begin: function(){
-	        this.fill();
-	        this.stroke();
+	        this.props.context.fillStyle = this.props.fillStyle;
 	        this.props.context.save();
 	        this.props.context.translate(
 	            this.props.x,
@@ -206,6 +241,20 @@
 	    },
 	    end: function(){
 	        this.props.context.restore();
+	    }
+	};
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by nmondon on 13/02/2015.
+	 */
+	
+	module.exports = {
+	    shouldComponentUpdate: function(nextProps, nextState){
+	        return nextProps.context;
 	    }
 	};
 

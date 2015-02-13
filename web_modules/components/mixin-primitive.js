@@ -3,15 +3,9 @@
  */
 
 module.exports = {
-    fill: function(){
-        this.props.context.fillStyle = this.props.fillStyle;
-    },
-    stroke: function(){
 
-    },
     begin: function(){
-        this.fill();
-        this.stroke();
+        this.props.context.fillStyle = this.props.fillStyle;
         this.props.context.save();
         this.props.context.translate(
             this.props.x,

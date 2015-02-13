@@ -1,34 +1,31 @@
 'use strict';
 
 var React = require('react');
-var mixinElements = require('components/mixin-elements');
+var mixinComponent = require('components/mixin-component');
 
 var Polygon = React.createClass({
-    mixins: [mixinElements],
+    mixins: [mixinComponent],
     getDefaultProps: function(){
         return {
-            x: 0,
-            y: 0,
-            w: 10,
-            h: 10,
-            fillStyle: 'rgb(200,0,0)',
-            rotate: 0
+            points: [],
+            fillStyle: 'rgb(200,0,0)'
         }
-    },
-    shouldComponentUpdate: function(nextProps, nextState){
-        return nextProps.context;
     },
     render: function(){
         if(!this.props.context) return false;
         var ctx = this.props.context;
 
-        this.begin();
-        ctx.fillRect (
-            -this.props.w/2,
-            -this.props.h/2,
-            this.props.w/2,
-            this.props.h/2);
-        this.end();
+        ctx.fillStyle = this.props.fillStyle;
+        ctx.beginPath();
+        this.props.points.forEach(function(p, i){
+            if(i === 0){
+                ctx.moveTo(p[0], p[1]);
+            }else {
+                ctx.lineTo(p[0], p[1]);
+            }
+        }, this);
+        ctx.closePath();
+        ctx.fill();
 
         return false;
     }
