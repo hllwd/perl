@@ -4,3 +4,11 @@
 
 'use strict';
 
+var genetic = {
+
+
+
+
+};
+
+module.exports = genetic;
