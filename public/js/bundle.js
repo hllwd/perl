@@ -71,7 +71,7 @@
 	    },
 	    render: function () {
 	        return (
-	            React.createElement(Canvas, {identifier: "canvas", step: this.state.step}, 
+	            React.createElement(Canvas, {identifier: "canvas", step: this.state.step, width: 800, height: 600}, 
 	                React.createElement(Polygon, {points: [[10,10], [40, 40], [30, 80]], fillStyle: '#00F'}), 
 	                React.createElement(Rect, {x: this.state.step%50, y: 30, rotate: .3, h: 40, fillStyle: '#0F0'}), 
 	                React.createElement(Rect, {x: 10, y: this.state.step%50})
@@ -130,7 +130,7 @@
 	    render: function () {
 	        var children = this.renderChildren();
 	        return (
-	            React.createElement("canvas", {id: this.props.identifier}, 
+	            React.createElement("canvas", {id: this.props.identifier, width: this.props.width, height: this.props.height}, 
 	                children
 	            )
 	        );
