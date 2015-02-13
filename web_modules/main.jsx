@@ -25,7 +25,7 @@ var Genetic = React.createClass({
     },
     render: function () {
         return (
-            <Canvas identifier="canvas" step={this.state.step}>
+            <Canvas identifier="canvas" step={this.state.step} width={800} height={600}>
                 <Polygon points={[[10,10], [40, 40], [30, 80]]} fillStyle={'#00F'}/>
                 <Rect x={this.state.step%50} y={30} rotate={.3} h={40} fillStyle={'#0F0'}/>
                 <Rect x={10} y={this.state.step%50}/>

@@ -25,7 +25,7 @@ var Canvas = React.createClass({
     render: function () {
         var children = this.renderChildren();
         return (
-            <canvas id={this.props.identifier}>
+            <canvas id={this.props.identifier} width={this.props.width} height={this.props.height}>
                 {children}
             </canvas>
         );
