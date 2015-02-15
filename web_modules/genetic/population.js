@@ -5,6 +5,7 @@
 var _ = require('lodash');
 
 var UnitProto = require('genetic/unit');
+var VectorUtil = require('genetic/vector-util');
 
 var Population = {
 
@@ -21,6 +22,16 @@ var Population = {
             return Object.create(UnitProto).init(numVecs, weight, w, h);
         });
         return this;
+    },
+
+    render: function(){
+        this.units.forEach(function(u){ u.render();});
+    },
+
+    sortUnits: function(data){
+        return _.sortBy(this.units, function(u){
+            return VectorUtil.dist(u.getMatrix(), data);
+        });
     }
 
 };

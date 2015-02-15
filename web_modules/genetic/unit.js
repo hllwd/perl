@@ -8,7 +8,7 @@ var vectorUtil = require('genetic/vector-util');
 var rgbaTemplate = _.template('rgba(<%=r%>, <%=g%>, <%=b%>, <%=a%>)');
 var scaleRgb = d3.scale.linear()
     .domain([0, 1])
-    .range([0, 255]);
+    .rangeRound([0, 255]);
 
 var Unit = {
 
@@ -16,7 +16,9 @@ var Unit = {
 
     context: null,
 
-    matrix: null,
+    scaleWidth: null,
+
+    scaleHeight: null,
 
     init: function (numVecs, weight, w, h) {
         // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
@@ -26,6 +28,12 @@ var Unit = {
         this.vecs = _.range(0, numVecs).map(function () {
             return vectorUtil.generate(weight);
         });
+        this.scaleWidth = d3.scale.linear()
+            .domain([0, 1])
+            .rangeRound([0, w]);
+        this.scaleHeight = d3.scale.linear()
+            .domain([0, 1])
+            .rangeRound([0, h]);
         return this;
     },
     render: function () {
@@ -33,17 +41,28 @@ var Unit = {
         this.vecs.forEach(function (v) {
             this.drawPolygon(
                 this.context,
-                v.slice(0, 6),
-                this.getFillString(v.slice(6, 10))
+                this.getPoints(v),
+                this.getFillString(v)
             );
         }, this);
-        this.drawPolygon();
-        this.retrieveMatrix();
+    },
+    getPoints: function (v) {
+        return [
+            this.getPointScale(v.slice(0, 2)),
+            this.getPointScale(v.slice(2, 4)),
+            this.getPointScale(v.slice(4, 6))
+        ]
+    },
+    getPointScale: function (v) {
+        return [
+            this.scaleWidth(v[0]),
+            this.scaleHeight(v[1])
+        ]
     },
     drawPolygon: function (ctx, points, fill) {
         ctx.fillStyle = fill;
         ctx.beginPath();
-        this.props.points.forEach(function (p, i) {
+        points.forEach(function (p, i) {
             if (i === 0) {
                 ctx.moveTo(p[0], p[1]);
             } else {
@@ -54,16 +73,17 @@ var Unit = {
         ctx.fill();
 
     },
-    getFillString(v) {
+    getFillString: function (v) {
+        var vc = v.slice(6, 10);
         return rgbaTemplate({
-            r: scaleRgb(v[0]),
-            g: scaleRgb(v[1]),
-            b: scaleRgb(v[2]),
-            a: v[4]
-        })
+            r: scaleRgb(vc[0]),
+            g: scaleRgb(vc[1]),
+            b: scaleRgb(vc[2]),
+            a: d3.round(vc[3], 2)
+        });
     },
-    retrieveMatrix: function () {
-        this.matrix = this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data;
+    getMatrix: function () {
+        return _.toArray(this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data);
     }
 
 };

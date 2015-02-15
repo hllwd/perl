@@ -2,6 +2,7 @@
 
 var React = require('react');
 var $ = require('jquery');
+var _ = require('lodash');
 
 var Canvas = React.createClass({
     _canvas: false,
@@ -14,7 +15,7 @@ var Canvas = React.createClass({
         this._context && this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
     },
     getMatrix: function () {
-        return this._context.getImageData(0, 0, this._context.canvas.width, this._context.canvas.height).data;
+        return _.toArray(this._context.getImageData(0, 0, this._context.canvas.width, this._context.canvas.height).data);
     },
     renderChildren: function () {
         return React.Children.map(this.props.children, function (child) {
