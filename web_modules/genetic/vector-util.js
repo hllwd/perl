@@ -30,6 +30,9 @@ module.exports = {
             return sum + val;
         }));
     },
+    castToArray: function(v){
+        return Array.prototype.map.call(v, function(d){return d;});
+    },
     generate: function(dim){
         return _.range(0, dim).map(function(){
             return Math.random();

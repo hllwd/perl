@@ -4,6 +4,8 @@ require('style.scss');
 
 var React = require('react');
 var $ = require('jquery');
+var P = require('bluebird');
+
 var Canvas = require('components/canvas');
 var Rect = require('components/rect');
 var Polygon = require('components/polygon');
@@ -16,18 +18,18 @@ image.src = imageSrc;
 var dim = [334, 413];
 
 var Genetic = React.createClass({
-    getInitialState: function(){
+    getInitialState: function () {
         return {
             step: 0
         };
     },
-    componentDidMount: function(){
+    componentDidMount: function () {
         this.incrementStep();
     },
-    incrementStep: function(){
-        window.requestAnimationFrame(function(){
+    incrementStep: function () {
+        window.requestAnimationFrame(function () {
             this.setState({
-                step: this.state.step+1
+                step: this.state.step + 1
             });
             this.incrementStep();
         }.bind(this))
@@ -35,20 +37,25 @@ var Genetic = React.createClass({
     render: function () {
         return (
             <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]}>
-                <Polygon points={[[10,10], [40, 40], [30, 80]]} fillStyle={'#00F'}/>
-                <Rect x={this.state.step%50} y={30} rotate={.3} h={40} fillStyle={'#0F0'}/>
-                <Rect x={10} y={this.state.step%50}/>
+                <Polygon points={[[10, 10], [40, 40], [30, 80]]} fillStyle={'#00F'}/>
+                <Rect x={this.state.step % 50} y={30} rotate={.3} h={40} fillStyle={'#0F0'}/>
+                <Rect x={10} y={this.state.step % 50}/>
             </Canvas>
         )
     }
 });
 
 var Original = React.createClass({
-    getInitialState: function(){
+    getInitialState: function () {
         return {step: 0};
     },
-    componentDidMount: function(){
+    componentDidMount: function () {
         this.setState({step: 1});
+    },
+    componentDidUpdate: function () {
+        this.props.resolve(
+            document.getElementById('canvas-img').getContext('2d').getImageData(0, 0, dim[0], dim[1])
+        );
     },
     render: function () {
         return (
@@ -60,13 +67,19 @@ var Original = React.createClass({
 });
 
 $(function () {
-    React.render(
-        <Genetic/>,
-        $('#gen-container').get(0)
-    );
 
-    React.render(
-        <Original />,
-        $('#img-container').get(0)
-    )
+    new P(function (res) {
+        React.render(
+            <Original resolve={res}/>,
+            $('#img-container').get(0)
+        )
+    }).then(function (data) {
+        console.log(data);
+        React.render(
+            <Genetic/>,
+            $('#gen-container').get(0)
+        );
+    });
+
+
 })

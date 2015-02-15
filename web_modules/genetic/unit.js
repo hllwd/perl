@@ -20,7 +20,7 @@ var Unit = {
         return this;
     },
     retrieveMatrix: function () {
-        return this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height);
+        return this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data;
     }
 
 };

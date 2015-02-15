@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/madeleineio/perl",
   "devDependencies": {
+    "bluebird": "^2.9.9",
     "css-loader": "^0.9.1",
     "d3": "^3.5.3",
     "file-loader": "^0.8.1",

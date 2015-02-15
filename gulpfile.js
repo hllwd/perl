@@ -15,6 +15,8 @@ var concat = require('gulp-concat'),
 gulp.task('build-vendors', function () {
 
     var dependencies = [
+        // bluebird
+        'node_modules/bluebird/js/browser/bluebird.js',
         // d3
         'node_modules/d3/d3.js',
         // react
