@@ -22,18 +22,21 @@ var dim = [334, 413];
 var Genetic = React.createClass({
     getInitialState: function () {
         return {
-            step: 0
+            step: 0,
+            bi: {
+                chromosoms: []
+            }
         };
     },
     componentDidMount: function () {
-        this.setState({
-            step: 1
-        })
+        this.incrementStep();
     },
     incrementStep: function () {
         window.requestAnimationFrame(function () {
+            var bi = this.props.genetic.step();
             this.setState({
-                step: this.state.step + 1
+                step: this.state.step + 1,
+                bi: bi
             });
             this.incrementStep();
         }.bind(this))
@@ -41,11 +44,11 @@ var Genetic = React.createClass({
     render: function () {
         return (
             <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]}>
-                {this.props.individual.chromosoms.map(function(c, k){
-                    return <Polygon
-                        key={k}
-                        points={this.props.individual.getPoints(c)}
-                        fillStyle={this.props.individual.getFillString(c)}/>
+            {this.state.bi.chromosoms.map(function (c, k) {
+                return <Polygon
+                    key={k}
+                    points={this.state.bi.getPoints(c)}
+                    fillStyle={this.state.bi.getFillString(c)}/>
                 }.bind(this))}
             </Canvas>
         )
@@ -81,13 +84,12 @@ $(function () {
             $('#img-container').get(0)
         )
     }).then(function (data) {
-        genetic.init(data, 10, 50, 10, dim[0], dim[1]);
-        var bu = genetic.step();
-        React.render(
-            <Genetic individual={bu}/>,
-            $('#gen-container').get(0)
-        );
-    });
+            genetic.init(data, 10, 50, 10, dim[0], dim[1]);
+            React.render(
+                <Genetic genetic={genetic}/>,
+                $('#gen-container').get(0)
+            );
+        });
 
 
 })

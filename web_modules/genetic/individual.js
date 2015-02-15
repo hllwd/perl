@@ -75,12 +75,13 @@ var Individual = {
     },
     getFillString: function (v) {
         var vc = v.slice(6, 10);
-        return rgbaTemplate({
+        var s =  rgbaTemplate({
             r: scaleRgb(vc[0]),
             g: scaleRgb(vc[1]),
             b: scaleRgb(vc[2]),
             a: d3.round(vc[3], 2)
         });
+        return s;
     },
     getMatrix: function () {
         return _.toArray(this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data);

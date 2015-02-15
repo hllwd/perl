@@ -68,18 +68,21 @@
 	var Genetic = React.createClass({displayName: "Genetic",
 	    getInitialState: function () {
 	        return {
-	            step: 0
+	            step: 0,
+	            bi: {
+	                chromosoms: []
+	            }
 	        };
 	    },
 	    componentDidMount: function () {
-	        this.setState({
-	            step: 1
-	        })
+	        this.incrementStep();
 	    },
 	    incrementStep: function () {
 	        window.requestAnimationFrame(function () {
+	            var bi = this.props.genetic.step();
 	            this.setState({
-	                step: this.state.step + 1
+	                step: this.state.step + 1,
+	                bi: bi
 	            });
 	            this.incrementStep();
 	        }.bind(this))
@@ -87,11 +90,11 @@
 	    render: function () {
 	        return (
 	            React.createElement(Canvas, {identifier: "canvas-gen", step: this.state.step, width: dim[0], height: dim[1]}, 
-	                this.props.individual.chromosoms.map(function(c, k){
-	                    return React.createElement(Polygon, {
-	                        key: k, 
-	                        points: this.props.individual.getPoints(c), 
-	                        fillStyle: this.props.individual.getFillString(c)})
+	            this.state.bi.chromosoms.map(function (c, k) {
+	                return React.createElement(Polygon, {
+	                    key: k, 
+	                    points: this.state.bi.getPoints(c), 
+	                    fillStyle: this.state.bi.getFillString(c)})
 	                }.bind(this))
 	            )
 	        )
@@ -127,13 +130,12 @@
 	            $('#img-container').get(0)
 	        )
 	    }).then(function (data) {
-	        genetic.init(data, 10, 50, 10, dim[0], dim[1]);
-	        var bu = genetic.step();
-	        React.render(
-	            React.createElement(Genetic, {individual: bu}),
-	            $('#gen-container').get(0)
-	        );
-	    });
+	            genetic.init(data, 10, 50, 10, dim[0], dim[1]);
+	            React.render(
+	                React.createElement(Genetic, {genetic: genetic}),
+	                $('#gen-container').get(0)
+	            );
+	        });
 	
 	
 	})
@@ -806,12 +808,13 @@
 	    },
 	    getFillString: function (v) {
 	        var vc = v.slice(6, 10);
-	        return rgbaTemplate({
+	        var s =  rgbaTemplate({
 	            r: scaleRgb(vc[0]),
 	            g: scaleRgb(vc[1]),
 	            b: scaleRgb(vc[2]),
 	            a: d3.round(vc[3], 2)
 	        });
+	        return s;
 	    },
 	    getMatrix: function () {
 	        return _.toArray(this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data);
