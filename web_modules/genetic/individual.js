@@ -10,9 +10,9 @@ var scaleRgb = d3.scale.linear()
     .domain([0, 1])
     .rangeRound([0, 255]);
 
-var Unit = {
+var Individual = {
 
-    vecs: [],
+    chromosoms: [],
 
     context: null,
 
@@ -20,12 +20,12 @@ var Unit = {
 
     scaleHeight: null,
 
-    init: function (numVecs, weight, w, h) {
+    init: function (numChromosoms, weight, w, h) {
         // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
         this.context = window.document.createElement('canvas').getContext('2d');
         this.context.canvas.width = w;
         this.context.canvas.height = h;
-        this.vecs = _.range(0, numVecs).map(function () {
+        this.chromosoms = _.range(0, numChromosoms).map(function () {
             return vectorUtil.generate(weight);
         });
         this.scaleWidth = d3.scale.linear()
@@ -38,7 +38,7 @@ var Unit = {
     },
     render: function () {
         // weight === 10 here ; 2*3 points and 4 for rgba
-        this.vecs.forEach(function (v) {
+        this.chromosoms.forEach(function (v) {
             this.drawPolygon(
                 this.context,
                 this.getPoints(v),
@@ -88,4 +88,4 @@ var Unit = {
 
 };
 
-module.exports = Unit;
+module.exports = Individual;

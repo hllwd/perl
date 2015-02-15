@@ -4,32 +4,32 @@
 
 var _ = require('lodash');
 
-var UnitProto = require('genetic/unit');
+var IndividualProto = require('genetic/individual');
 var VectorUtil = require('genetic/vector-util');
 
 var Population = {
 
-    units: [],
+    individuals: [],
 
-    numVecs: 0,
+    numChromosoms: 0,
 
     weight: 0,
 
-    init: function(numUnits, numVecs, weight, w, h){
-        this.numVecs = numVecs;
+    init: function(numIndividuals, numChromosoms, weight, w, h){
+        this.numChromosoms = numChromosoms;
         this.weight = weight;
-        this.units = _.range(0, numUnits).map(function(){
-            return Object.create(UnitProto).init(numVecs, weight, w, h);
+        this.individuals = _.range(0, numIndividuals).map(function(){
+            return Object.create(IndividualProto).init(numChromosoms, weight, w, h);
         });
         return this;
     },
 
     render: function(){
-        this.units.forEach(function(u){ u.render();});
+        this.individuals.forEach(function(u){ u.render();});
     },
 
-    sortUnits: function(data){
-        return _.sortBy(this.units, function(u){
+    sortIndividuals: function(data){
+        return _.sortBy(this.individuals, function(u){
             return VectorUtil.dist(u.getMatrix(), data);
         });
     }

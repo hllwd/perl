@@ -86,12 +86,12 @@
 	    },
 	    render: function () {
 	        return (
-	            React.createElement(Canvas, {identifier: "canvas-gen", step: this.state.step, width: dim[0], height: dim[1], ref: "canvas"}, 
-	                this.props.unit.vecs.map(function(v){
-	                    console.log(this.props.unit.getPoints(v));
+	            React.createElement(Canvas, {identifier: "canvas-gen", step: this.state.step, width: dim[0], height: dim[1]}, 
+	                this.props.individual.chromosoms.map(function(c, k){
 	                    return React.createElement(Polygon, {
-	                        points: this.props.unit.getPoints(v), 
-	                        fillStyle: this.props.unit.getFillString(v)})
+	                        key: k, 
+	                        points: this.props.individual.getPoints(c), 
+	                        fillStyle: this.props.individual.getFillString(c)})
 	                }.bind(this))
 	            )
 	        )
@@ -127,10 +127,10 @@
 	            $('#img-container').get(0)
 	        )
 	    }).then(function (data) {
-	        genetic.init(data, 20, 50, 10, dim[0], dim[1]);
+	        genetic.init(data, 10, 50, 10, dim[0], dim[1]);
 	        var bu = genetic.step();
 	        React.render(
-	            React.createElement(Genetic, {unit: bu}),
+	            React.createElement(Genetic, {individual: bu}),
 	            $('#gen-container').get(0)
 	        );
 	    });
@@ -335,15 +335,19 @@
 	
 	    data: null,
 	
-	    init: function(data, numUnits, numVecs, weight, w, h){
+	    init: function(data, numIndividuals, numChromosoms, weight, w, h){
 	        this.data = data;
-	        this.population = Object.create(PopulationProp).init(numUnits, numVecs, weight, w, h);
+	        this.population = Object.create(PopulationProp).init(numIndividuals, numChromosoms, weight, w, h);
 	        return this;
 	    },
 	
 	    step: function(){
 	        this.population.render();
-	        return this.population.sortUnits(this.data)[0];
+	        return this.population.sortIndividuals(this.data)[0];
+	    },
+	
+	    cross: function(){
+	
 	    }
 	
 	
@@ -607,32 +611,32 @@
 	
 	var _ = __webpack_require__(15);
 	
-	var UnitProto = __webpack_require__(17);
+	var IndividualProto = __webpack_require__(20);
 	var VectorUtil = __webpack_require__(19);
 	
 	var Population = {
 	
-	    units: [],
+	    individuals: [],
 	
-	    numVecs: 0,
+	    numChromosoms: 0,
 	
 	    weight: 0,
 	
-	    init: function(numUnits, numVecs, weight, w, h){
-	        this.numVecs = numVecs;
+	    init: function(numIndividuals, numChromosoms, weight, w, h){
+	        this.numChromosoms = numChromosoms;
 	        this.weight = weight;
-	        this.units = _.range(0, numUnits).map(function(){
-	            return Object.create(UnitProto).init(numVecs, weight, w, h);
+	        this.individuals = _.range(0, numIndividuals).map(function(){
+	            return Object.create(IndividualProto).init(numChromosoms, weight, w, h);
 	        });
 	        return this;
 	    },
 	
 	    render: function(){
-	        this.units.forEach(function(u){ u.render();});
+	        this.individuals.forEach(function(u){ u.render();});
 	    },
 	
-	    sortUnits: function(data){
-	        return _.sortBy(this.units, function(u){
+	    sortIndividuals: function(data){
+	        return _.sortBy(this.individuals, function(u){
 	            return VectorUtil.dist(u.getMatrix(), data);
 	        });
 	    }
@@ -669,102 +673,7 @@
 	}
 
 /***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _ = __webpack_require__(15);
-	var d3 = __webpack_require__(18);
-	
-	var vectorUtil = __webpack_require__(19);
-	
-	var rgbaTemplate = _.template('rgba(<%=r%>, <%=g%>, <%=b%>, <%=a%>)');
-	var scaleRgb = d3.scale.linear()
-	    .domain([0, 1])
-	    .rangeRound([0, 255]);
-	
-	var Unit = {
-	
-	    vecs: [],
-	
-	    context: null,
-	
-	    scaleWidth: null,
-	
-	    scaleHeight: null,
-	
-	    init: function (numVecs, weight, w, h) {
-	        // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
-	        this.context = window.document.createElement('canvas').getContext('2d');
-	        this.context.canvas.width = w;
-	        this.context.canvas.height = h;
-	        this.vecs = _.range(0, numVecs).map(function () {
-	            return vectorUtil.generate(weight);
-	        });
-	        this.scaleWidth = d3.scale.linear()
-	            .domain([0, 1])
-	            .rangeRound([0, w]);
-	        this.scaleHeight = d3.scale.linear()
-	            .domain([0, 1])
-	            .rangeRound([0, h]);
-	        return this;
-	    },
-	    render: function () {
-	        // weight === 10 here ; 2*3 points and 4 for rgba
-	        this.vecs.forEach(function (v) {
-	            this.drawPolygon(
-	                this.context,
-	                this.getPoints(v),
-	                this.getFillString(v)
-	            );
-	        }, this);
-	    },
-	    getPoints: function (v) {
-	        return [
-	            this.getPointScale(v.slice(0, 2)),
-	            this.getPointScale(v.slice(2, 4)),
-	            this.getPointScale(v.slice(4, 6))
-	        ]
-	    },
-	    getPointScale: function (v) {
-	        return [
-	            this.scaleWidth(v[0]),
-	            this.scaleHeight(v[1])
-	        ]
-	    },
-	    drawPolygon: function (ctx, points, fill) {
-	        ctx.fillStyle = fill;
-	        ctx.beginPath();
-	        points.forEach(function (p, i) {
-	            if (i === 0) {
-	                ctx.moveTo(p[0], p[1]);
-	            } else {
-	                ctx.lineTo(p[0], p[1]);
-	            }
-	        }, this);
-	        ctx.closePath();
-	        ctx.fill();
-	
-	    },
-	    getFillString: function (v) {
-	        var vc = v.slice(6, 10);
-	        return rgbaTemplate({
-	            r: scaleRgb(vc[0]),
-	            g: scaleRgb(vc[1]),
-	            b: scaleRgb(vc[2]),
-	            a: d3.round(vc[3], 2)
-	        });
-	    },
-	    getMatrix: function () {
-	        return _.toArray(this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data);
-	    }
-	
-	};
-	
-	module.exports = Unit;
-
-/***/ },
+/* 17 */,
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -815,6 +724,102 @@
 	        });
 	    }
 	};
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _ = __webpack_require__(15);
+	var d3 = __webpack_require__(18);
+	
+	var vectorUtil = __webpack_require__(19);
+	
+	var rgbaTemplate = _.template('rgba(<%=r%>, <%=g%>, <%=b%>, <%=a%>)');
+	var scaleRgb = d3.scale.linear()
+	    .domain([0, 1])
+	    .rangeRound([0, 255]);
+	
+	var Individual = {
+	
+	    chromosoms: [],
+	
+	    context: null,
+	
+	    scaleWidth: null,
+	
+	    scaleHeight: null,
+	
+	    init: function (numChromosoms, weight, w, h) {
+	        // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
+	        this.context = window.document.createElement('canvas').getContext('2d');
+	        this.context.canvas.width = w;
+	        this.context.canvas.height = h;
+	        this.chromosoms = _.range(0, numChromosoms).map(function () {
+	            return vectorUtil.generate(weight);
+	        });
+	        this.scaleWidth = d3.scale.linear()
+	            .domain([0, 1])
+	            .rangeRound([0, w]);
+	        this.scaleHeight = d3.scale.linear()
+	            .domain([0, 1])
+	            .rangeRound([0, h]);
+	        return this;
+	    },
+	    render: function () {
+	        // weight === 10 here ; 2*3 points and 4 for rgba
+	        this.chromosoms.forEach(function (v) {
+	            this.drawPolygon(
+	                this.context,
+	                this.getPoints(v),
+	                this.getFillString(v)
+	            );
+	        }, this);
+	    },
+	    getPoints: function (v) {
+	        return [
+	            this.getPointScale(v.slice(0, 2)),
+	            this.getPointScale(v.slice(2, 4)),
+	            this.getPointScale(v.slice(4, 6))
+	        ]
+	    },
+	    getPointScale: function (v) {
+	        return [
+	            this.scaleWidth(v[0]),
+	            this.scaleHeight(v[1])
+	        ]
+	    },
+	    drawPolygon: function (ctx, points, fill) {
+	        ctx.fillStyle = fill;
+	        ctx.beginPath();
+	        points.forEach(function (p, i) {
+	            if (i === 0) {
+	                ctx.moveTo(p[0], p[1]);
+	            } else {
+	                ctx.lineTo(p[0], p[1]);
+	            }
+	        }, this);
+	        ctx.closePath();
+	        ctx.fill();
+	
+	    },
+	    getFillString: function (v) {
+	        var vc = v.slice(6, 10);
+	        return rgbaTemplate({
+	            r: scaleRgb(vc[0]),
+	            g: scaleRgb(vc[1]),
+	            b: scaleRgb(vc[2]),
+	            a: d3.round(vc[3], 2)
+	        });
+	    },
+	    getMatrix: function () {
+	        return _.toArray(this.context.getImageData(0, 0, this.context.canvas.width, this.context.canvas.height).data);
+	    }
+	
+	};
+	
+	module.exports = Individual;
 
 /***/ }
 /******/ ])

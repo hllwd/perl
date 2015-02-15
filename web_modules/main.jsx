@@ -40,12 +40,12 @@ var Genetic = React.createClass({
     },
     render: function () {
         return (
-            <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]} ref="canvas">
-                {this.props.unit.vecs.map(function(v){
-                    console.log(this.props.unit.getPoints(v));
+            <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]}>
+                {this.props.individual.chromosoms.map(function(c, k){
                     return <Polygon
-                        points={this.props.unit.getPoints(v)}
-                        fillStyle={this.props.unit.getFillString(v)}/>
+                        key={k}
+                        points={this.props.individual.getPoints(c)}
+                        fillStyle={this.props.individual.getFillString(c)}/>
                 }.bind(this))}
             </Canvas>
         )
@@ -81,10 +81,10 @@ $(function () {
             $('#img-container').get(0)
         )
     }).then(function (data) {
-        genetic.init(data, 20, 50, 10, dim[0], dim[1]);
+        genetic.init(data, 10, 50, 10, dim[0], dim[1]);
         var bu = genetic.step();
         React.render(
-            <Genetic unit={bu}/>,
+            <Genetic individual={bu}/>,
             $('#gen-container').get(0)
         );
     });
