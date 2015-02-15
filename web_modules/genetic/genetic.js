@@ -19,7 +19,15 @@ var genetic = {
         return this.population.sortIndividuals(this.data)[0];
     },
 
-    cross: function(){
+    selection: function(){
+
+    },
+
+    crossover: function(){
+
+    },
+
+    mutation: function(){
 
     }
 

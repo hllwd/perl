@@ -30,7 +30,7 @@ var Population = {
 
     sortIndividuals: function(data){
         return _.sortBy(this.individuals, function(u){
-            return VectorUtil.dist(u.getMatrix(), data);
+            return VectorUtil.poorDist(u.getMatrix(), data);
         });
     }
 
