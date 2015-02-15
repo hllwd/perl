@@ -82,7 +82,7 @@
 	    },
 	    render: function () {
 	        return (
-	            React.createElement(Canvas, {identifier: "canvas-gen", step: this.state.step, width: dim[0], height: dim[1]}, 
+	            React.createElement(Canvas, {identifier: "canvas-gen", step: this.state.step, width: dim[0], height: dim[1], ref: "canvas"}, 
 	                React.createElement(Polygon, {points: [[10, 10], [40, 40], [30, 80]], fillStyle: '#00F'}), 
 	                React.createElement(Rect, {x: this.state.step % 50, y: 30, rotate: .3, h: 40, fillStyle: '#0F0'}), 
 	                React.createElement(Rect, {x: 10, y: this.state.step % 50})
@@ -100,12 +100,12 @@
 	    },
 	    componentDidUpdate: function () {
 	        this.props.resolve(
-	            document.getElementById('canvas-img').getContext('2d').getImageData(0, 0, dim[0], dim[1])
+	            this.refs.canvas.getMatrix()
 	        );
 	    },
 	    render: function () {
 	        return (
-	            React.createElement(Canvas, {identifier: "canvas-img", step: this.state.step, width: dim[0], height: dim[1]}, 
+	            React.createElement(Canvas, {identifier: "canvas-img", step: this.state.step, width: dim[0], height: dim[1], ref: "canvas"}, 
 	                React.createElement(ImageComp, {image: image})
 	            )
 	        )
@@ -156,13 +156,15 @@
 	    _context: false,
 	    componentDidMount: function () {
 	        var canvas = $('#' + this.props.identifier).get(0);
-	        this._canvas = canvas;
 	        this._context = canvas.getContext('2d');
 	    },
-	    componentWillUpdate: function(){
-	        this._context && this._context.clearRect(0,0, this._canvas.width, this._canvas.height);
+	    componentWillUpdate: function () {
+	        this._context && this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
 	    },
-	    renderChildren: function(){
+	    getMatrix: function () {
+	        return this._context.getImageData(0, 0, this._context.canvas.width, this._context.canvas.height).data;
+	    },
+	    renderChildren: function () {
 	        return React.Children.map(this.props.children, function (child) {
 	            return React.addons.cloneWithProps(child, {
 	                context: this._context

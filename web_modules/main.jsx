@@ -36,7 +36,7 @@ var Genetic = React.createClass({
     },
     render: function () {
         return (
-            <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]}>
+            <Canvas identifier="canvas-gen" step={this.state.step} width={dim[0]} height={dim[1]} ref="canvas">
                 <Polygon points={[[10, 10], [40, 40], [30, 80]]} fillStyle={'#00F'}/>
                 <Rect x={this.state.step % 50} y={30} rotate={.3} h={40} fillStyle={'#0F0'}/>
                 <Rect x={10} y={this.state.step % 50}/>
@@ -54,12 +54,12 @@ var Original = React.createClass({
     },
     componentDidUpdate: function () {
         this.props.resolve(
-            document.getElementById('canvas-img').getContext('2d').getImageData(0, 0, dim[0], dim[1])
+            this.refs.canvas.getMatrix()
         );
     },
     render: function () {
         return (
-            <Canvas identifier="canvas-img" step={this.state.step} width={dim[0]} height={dim[1]}>
+            <Canvas identifier="canvas-img" step={this.state.step} width={dim[0]} height={dim[1]} ref="canvas">
                 <ImageComp image={image}/>
             </Canvas>
         )
