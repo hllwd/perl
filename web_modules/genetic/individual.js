@@ -36,6 +36,25 @@ var Individual = {
             .rangeRound([0, h]);
         return this;
     },
+    init2: function(parent1, parent2, w, h){
+        this.context = window.document.createElement('canvas').getContext('2d');
+        this.context.canvas.width = w;
+        this.context.canvas.height = h;
+
+        var numChromosoms = parent1.chromosoms.length;
+
+        var cut = parseInt(Math.random() * numChromosoms);
+
+        this.chromosoms = parent1.chromosoms.slice(0, cut).concat(parent2.chromosoms.slice(cut, numChromosoms));
+
+        this.scaleWidth = d3.scale.linear()
+            .domain([0, 1])
+            .rangeRound([0, w]);
+        this.scaleHeight = d3.scale.linear()
+            .domain([0, 1])
+            .rangeRound([0, h]);
+        return this;
+    },
     render: function () {
         // weight === 10 here ; 2*3 points and 4 for rgba
         this.chromosoms.forEach(function (v) {

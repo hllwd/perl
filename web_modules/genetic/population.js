@@ -28,6 +28,10 @@ var Population = {
         this.individuals.forEach(function(u){ u.render();});
     },
 
+    setIndividuals: function(individuals){
+        this.individuals = individuals;
+    },
+
     sortIndividuals: function(data){
         return _.sortBy(this.individuals, function(u){
             return VectorUtil.poorDist(u.getMatrix(), data);
