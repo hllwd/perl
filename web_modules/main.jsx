@@ -84,7 +84,7 @@ $(function () {
             $('#img-container').get(0)
         )
     }).then(function (data) {
-            genetic.init(data, 30, .1, 50, 10, dim[0], dim[1]);
+            genetic.init(data, 50, 10, dim[0], dim[1]);
             React.render(
                 <Genetic genetic={genetic}/>,
                 $('#gen-container').get(0)

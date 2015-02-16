@@ -46,7 +46,7 @@
 
 	'use strict';
 	
-	__webpack_require__(10);
+	__webpack_require__(9);
 	
 	var React = __webpack_require__(1);
 	var $ = __webpack_require__(2);
@@ -130,7 +130,7 @@
 	            $('#img-container').get(0)
 	        )
 	    }).then(function (data) {
-	            genetic.init(data, 30, .1, 50, 10, dim[0], dim[1]);
+	            genetic.init(data, 50, 10, dim[0], dim[1]);
 	            React.render(
 	                React.createElement(Genetic, {genetic: genetic}),
 	                $('#gen-container').get(0)
@@ -166,7 +166,7 @@
 	
 	var React = __webpack_require__(1);
 	var $ = __webpack_require__(2);
-	var _ = __webpack_require__(9);
+	var _ = __webpack_require__(11);
 	
 	var Canvas = React.createClass({displayName: "Canvas",
 	    _canvas: false,
@@ -208,7 +208,7 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var mixinComponent = __webpack_require__(13);
+	var mixinComponent = __webpack_require__(14);
 	
 	var Rect = React.createClass({displayName: "Rect",
 	    mixins: [ mixinComponent],
@@ -258,7 +258,7 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var mixinComponent = __webpack_require__(13);
+	var mixinComponent = __webpack_require__(14);
 	
 	var Polygon = React.createClass({displayName: "Polygon",
 	    mixins: [mixinComponent],
@@ -298,7 +298,7 @@
 	
 	var React = __webpack_require__(1);
 	
-	var mixinComponent = __webpack_require__(13);
+	var mixinComponent = __webpack_require__(14);
 	
 	var ImageComp = React.createClass({displayName: "ImageComp",
 	    getDefaultProps: function(){
@@ -329,61 +329,59 @@
 
 	'use strict';
 	
-	var _ = __webpack_require__(9);
+	var _ = __webpack_require__(11);
 	
-	var PopulationProp = __webpack_require__(15);
-	var IndividualProp = __webpack_require__(17);
+	var IndividualProto = __webpack_require__(16);
+	var VectorUtil = __webpack_require__(18);
 	
 	var genetic = {
 	
-	    population: null,
-	
 	    data: null,
 	
-	    numIndividuals: 0,
+	    numChromosoms: 0,
 	
-	    selectionRate: 0,
+	    weight: 0,
 	
 	    w: 0,
 	
 	    h: 0,
 	
-	    init: function(data, numIndividuals, selectionRate, numChromosoms, weight, w, h){
+	    individual: null,
+	
+	    diff: 0,
+	
+	    init: function(data, numChromosoms, weight, w, h){
 	        this.data = data;
-	        this.numIndividuals = numIndividuals;
-	        this.selectionRate = selectionRate;
-	        this.population = Object.create(PopulationProp).init(numIndividuals, numChromosoms, weight, w, h);
+	        this.individual = Object.create(IndividualProto).init(numChromosoms, weight, w, h).render();
+	        this.diff = VectorUtil.dist(this.individual.getMatrix(), this.data);
+	        this.numChromosoms = numChromosoms;
+	        this.weight = weight;
 	        this.w = w;
 	        this.h = h;
 	        return this;
 	    },
 	
 	    step: function(){
-	        console.log('step');
-	        this.population.render();
-	        var selectedPopulation = this.selection();
-	        var bi = selectedPopulation[0];
-	        this.crossover(selectedPopulation);
-	        return bi;
-	    },
+	        // create new individual
+	        var newIndividual = this.mutation();
+	        var newDiff = VectorUtil.dist(newIndividual.getMatrix(), this.data);
 	
-	    selection: function(){
-	        return this.population.sortIndividuals(this.data).slice(0, parseInt(this.selectionRate * this.numIndividuals));
-	    },
+	        if(newDiff < this.diff){
+	            console.log('mutation réussie', this.diff, newDiff)
+	            this.individual = newIndividual;
+	            this.diff = newDiff;
+	        }else {
+	            console.log('mutation non réussie', this.diff, newDiff)
+	        }
 	
-	    crossover: function(selectedPopulation){
-	        var children = [];
-	        _.range(0, this.numIndividuals).map(function(){
-	            var shuffleParents = _.shuffle(selectedPopulation);
-	            var parent1 = shuffleParents[0];
-	            var parent2 = shuffleParents[1];
-	            children.push(Object.create(IndividualProp).init2(parent1, parent2, this.w, this.h));
-	        }.bind(this))
-	        this.population.setIndividuals(children);
+	        return this.individual;
 	    },
 	
 	    mutation: function(){
-	
+	        return Object.create(IndividualProto)
+	            .init(this.numChromosoms, this.weight, this.w, this.h)
+	            .mutateFrom(this.individual)
+	            .render();
 	    }
 	
 	
@@ -395,24 +393,18 @@
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = _;
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(11);
+	var content = __webpack_require__(10);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(14)(content, {});
+	var update = __webpack_require__(13)(content, {});
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
-		module.hot.accept("!!/Users/nicolasmondon/Documents/madeleineio/perl/node_modules/css-loader/index.js!/Users/nicolasmondon/Documents/madeleineio/perl/node_modules/sass-loader/index.js!/Users/nicolasmondon/Documents/madeleineio/perl/sass/style.scss", function() {
-			var newContent = require("!!/Users/nicolasmondon/Documents/madeleineio/perl/node_modules/css-loader/index.js!/Users/nicolasmondon/Documents/madeleineio/perl/node_modules/sass-loader/index.js!/Users/nicolasmondon/Documents/madeleineio/perl/sass/style.scss");
+		module.hot.accept("!!/Users/nmondon/PhpstormProjects/madeleineio/perl/node_modules/css-loader/index.js!/Users/nmondon/PhpstormProjects/madeleineio/perl/node_modules/sass-loader/index.js!/Users/nmondon/PhpstormProjects/madeleineio/perl/sass/style.scss", function() {
+			var newContent = require("!!/Users/nmondon/PhpstormProjects/madeleineio/perl/node_modules/css-loader/index.js!/Users/nmondon/PhpstormProjects/madeleineio/perl/node_modules/sass-loader/index.js!/Users/nmondon/PhpstormProjects/madeleineio/perl/sass/style.scss");
 			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 			update(newContent);
 		});
@@ -421,11 +413,17 @@
 	}
 
 /***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(19)();
+	exports.push([module.id, "html,body{width:100%;height:100%;margin:0}#img-container,#gen-container{display:inline-block;width:400px}", ""]);
+
+/***/ },
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(16)();
-	exports.push([module.id, "html,body{width:100%;height:100%;margin:0}#img-container,#gen-container{display:inline-block;width:400px}", ""]);
+	module.exports = _;
 
 /***/ },
 /* 12 */
@@ -435,20 +433,6 @@
 
 /***/ },
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Created by nmondon on 13/02/2015.
-	 */
-	
-	module.exports = {
-	    shouldComponentUpdate: function(nextProps, nextState){
-	        return nextProps.context;
-	    }
-	};
-
-/***/ },
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -644,82 +628,28 @@
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by nmondon on 13/02/2015.
 	 */
 	
-	var _ = __webpack_require__(9);
-	
-	var IndividualProto = __webpack_require__(17);
-	var VectorUtil = __webpack_require__(18);
-	
-	var Population = {
-	
-	    individuals: [],
-	
-	    numChromosoms: 0,
-	
-	    weight: 0,
-	
-	    init: function(numIndividuals, numChromosoms, weight, w, h){
-	        this.numChromosoms = numChromosoms;
-	        this.weight = weight;
-	        this.individuals = _.range(0, numIndividuals).map(function(){
-	            return Object.create(IndividualProto).init(numChromosoms, weight, w, h);
-	        });
-	        return this;
-	    },
-	
-	    render: function(){
-	        this.individuals.forEach(function(u){ u.render();});
-	    },
-	
-	    setIndividuals: function(individuals){
-	        this.individuals = individuals;
-	    },
-	
-	    sortIndividuals: function(data){
-	        return _.sortBy(this.individuals, function(u){
-	            return VectorUtil.poorDist(u.getMatrix(), data);
-	        });
+	module.exports = {
+	    shouldComponentUpdate: function(nextProps, nextState){
+	        return nextProps.context;
 	    }
-	
 	};
-	
-	module.exports =  Population;
 
 /***/ },
+/* 15 */,
 /* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = function() {
-		var list = [];
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-		return list;
-	}
-
-/***/ },
-/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _ = __webpack_require__(9);
-	var d3 = __webpack_require__(19);
+	var _ = __webpack_require__(11);
+	var d3 = __webpack_require__(17);
 	
 	var vectorUtil = __webpack_require__(18);
 	
@@ -738,11 +668,17 @@
 	
 	    scaleHeight: null,
 	
+	    w: 0,
+	
+	    h: 0,
+	
 	    init: function (numChromosoms, weight, w, h) {
 	        // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
 	        this.context = window.document.createElement('canvas').getContext('2d');
 	        this.context.canvas.width = w;
 	        this.context.canvas.height = h;
+	        this.w = w;
+	        this.h = h;
 	        this.chromosoms = _.range(0, numChromosoms).map(function () {
 	            return vectorUtil.generate(weight);
 	        });
@@ -754,23 +690,13 @@
 	            .rangeRound([0, h]);
 	        return this;
 	    },
-	    init2: function(parent1, parent2, w, h){
-	        this.context = window.document.createElement('canvas').getContext('2d');
-	        this.context.canvas.width = w;
-	        this.context.canvas.height = h;
+	    mutateFrom: function(parent){
+	        this.chromosoms = _.cloneDeep(parent.chromosoms);
+	        // mutation
+	        var numChromosomToMutate = Math.floor(Math.random() * this.chromosoms.length);
+	        var numWeightToMutate = Math.floor(Math.random() * this.chromosoms[0].length);
+	        this.chromosoms[numChromosomToMutate][numWeightToMutate] = Math.random();
 	
-	        var numChromosoms = parent1.chromosoms.length;
-	
-	        var cut = parseInt(Math.random() * numChromosoms);
-	
-	        this.chromosoms = parent1.chromosoms.slice(0, cut).concat(parent2.chromosoms.slice(cut, numChromosoms));
-	
-	        this.scaleWidth = d3.scale.linear()
-	            .domain([0, 1])
-	            .rangeRound([0, w]);
-	        this.scaleHeight = d3.scale.linear()
-	            .domain([0, 1])
-	            .rangeRound([0, h]);
 	        return this;
 	    },
 	    render: function () {
@@ -782,6 +708,7 @@
 	                this.getFillString(v)
 	            );
 	        }, this);
+	        return this;
 	    },
 	    getPoints: function (v) {
 	        return [
@@ -829,6 +756,12 @@
 	module.exports = Individual;
 
 /***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = d3;
+
+/***/ },
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -839,8 +772,8 @@
 	
 	'use strict';
 	
-	var _ = __webpack_require__(9);
-	var d3 = __webpack_require__(19);
+	var _ = __webpack_require__(11);
+	var d3 = __webpack_require__(17);
 	
 	module.exports = {
 	    mult: function(v, coef){
@@ -886,7 +819,22 @@
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = d3;
+	module.exports = function() {
+		var list = [];
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+		return list;
+	}
 
 /***/ }
 /******/ ])

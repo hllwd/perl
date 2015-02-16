@@ -2,59 +2,57 @@
 
 var _ = require('lodash');
 
-var PopulationProp = require('genetic/population');
-var IndividualProp = require('genetic/individual');
+var IndividualProto = require('genetic/individual');
+var VectorUtil = require('genetic/vector-util');
 
 var genetic = {
 
-    population: null,
-
     data: null,
 
-    numIndividuals: 0,
+    numChromosoms: 0,
 
-    selectionRate: 0,
+    weight: 0,
 
     w: 0,
 
     h: 0,
 
-    init: function(data, numIndividuals, selectionRate, numChromosoms, weight, w, h){
+    individual: null,
+
+    diff: 0,
+
+    init: function(data, numChromosoms, weight, w, h){
         this.data = data;
-        this.numIndividuals = numIndividuals;
-        this.selectionRate = selectionRate;
-        this.population = Object.create(PopulationProp).init(numIndividuals, numChromosoms, weight, w, h);
+        this.individual = Object.create(IndividualProto).init(numChromosoms, weight, w, h).render();
+        this.diff = VectorUtil.dist(this.individual.getMatrix(), this.data);
+        this.numChromosoms = numChromosoms;
+        this.weight = weight;
         this.w = w;
         this.h = h;
         return this;
     },
 
     step: function(){
-        console.log('step');
-        this.population.render();
-        var selectedPopulation = this.selection();
-        var bi = selectedPopulation[0];
-        this.crossover(selectedPopulation);
-        return bi;
-    },
+        // create new individual
+        var newIndividual = this.mutation();
+        var newDiff = VectorUtil.dist(newIndividual.getMatrix(), this.data);
 
-    selection: function(){
-        return this.population.sortIndividuals(this.data).slice(0, parseInt(this.selectionRate * this.numIndividuals));
-    },
+        if(newDiff < this.diff){
+            console.log('mutation réussie', this.diff, newDiff)
+            this.individual = newIndividual;
+            this.diff = newDiff;
+        }else {
+            console.log('mutation non réussie', this.diff, newDiff)
+        }
 
-    crossover: function(selectedPopulation){
-        var children = [];
-        _.range(0, this.numIndividuals).map(function(){
-            var shuffleParents = _.shuffle(selectedPopulation);
-            var parent1 = shuffleParents[0];
-            var parent2 = shuffleParents[1];
-            children.push(Object.create(IndividualProp).init2(parent1, parent2, this.w, this.h));
-        }.bind(this))
-        this.population.setIndividuals(children);
+        return this.individual;
     },
 
     mutation: function(){
-
+        return Object.create(IndividualProto)
+            .init(this.numChromosoms, this.weight, this.w, this.h)
+            .mutateFrom(this.individual)
+            .render();
     }
 
 

@@ -20,11 +20,17 @@ var Individual = {
 
     scaleHeight: null,
 
+    w: 0,
+
+    h: 0,
+
     init: function (numChromosoms, weight, w, h) {
         // http://stackoverflow.com/questions/3892010/create-2d-context-without-canvas
         this.context = window.document.createElement('canvas').getContext('2d');
         this.context.canvas.width = w;
         this.context.canvas.height = h;
+        this.w = w;
+        this.h = h;
         this.chromosoms = _.range(0, numChromosoms).map(function () {
             return vectorUtil.generate(weight);
         });
@@ -36,23 +42,13 @@ var Individual = {
             .rangeRound([0, h]);
         return this;
     },
-    init2: function(parent1, parent2, w, h){
-        this.context = window.document.createElement('canvas').getContext('2d');
-        this.context.canvas.width = w;
-        this.context.canvas.height = h;
+    mutateFrom: function(parent){
+        this.chromosoms = _.cloneDeep(parent.chromosoms);
+        // mutation
+        var numChromosomToMutate = Math.floor(Math.random() * this.chromosoms.length);
+        var numWeightToMutate = Math.floor(Math.random() * this.chromosoms[0].length);
+        this.chromosoms[numChromosomToMutate][numWeightToMutate] = Math.random();
 
-        var numChromosoms = parent1.chromosoms.length;
-
-        var cut = parseInt(Math.random() * numChromosoms);
-
-        this.chromosoms = parent1.chromosoms.slice(0, cut).concat(parent2.chromosoms.slice(cut, numChromosoms));
-
-        this.scaleWidth = d3.scale.linear()
-            .domain([0, 1])
-            .rangeRound([0, w]);
-        this.scaleHeight = d3.scale.linear()
-            .domain([0, 1])
-            .rangeRound([0, h]);
         return this;
     },
     render: function () {
@@ -64,6 +60,7 @@ var Individual = {
                 this.getFillString(v)
             );
         }, this);
+        return this;
     },
     getPoints: function (v) {
         return [
